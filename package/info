@@ -1,0 +1,4 @@
+package=shh-portable-utils
+version=0.0.0.1
+category=admin
+package_macro_name=SHH_PORTABLE_UTILS
