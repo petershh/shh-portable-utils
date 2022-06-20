@@ -1,0 +1,12 @@
+*.o
+*.a
+*.lo
+*.so
+*.so.*
+config.mak
+src/include/shh-portable-utils/config.h
+basename
+cat
+false
+true
+uniq
