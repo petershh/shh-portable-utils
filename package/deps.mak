@@ -18,5 +18,3 @@ true: EXTRA_LIBS :=
 true: src/shh-portable-utils/true.o
 uniq: EXTRA_LIBS := -lskarnet
 uniq: src/shh-portable-utils/uniq.o
-uniq.c: EXTRA_LIBS :=
-uniq.c: src/shh-portable-utils/uniq.c.o
