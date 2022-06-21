@@ -8,7 +8,7 @@ src/shh-portable-utils/false.o src/shh-portable-utils/false.lo: src/shh-portable
 src/shh-portable-utils/true.o src/shh-portable-utils/true.lo: src/shh-portable-utils/true.c
 src/shh-portable-utils/uniq.o src/shh-portable-utils/uniq.lo: src/shh-portable-utils/uniq.c
 
-basename: EXTRA_LIBS :=
+basename: EXTRA_LIBS := -lskarnet
 basename: src/shh-portable-utils/basename.o
 cat: EXTRA_LIBS := -lskarnet
 cat: src/shh-portable-utils/cat.o

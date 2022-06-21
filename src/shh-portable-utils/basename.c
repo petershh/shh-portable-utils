@@ -1,36 +1,42 @@
-#include <unistd.h>
 #include <string.h>
+
+#include <skalibs/allreadwrite.h>
 
 int main(int argc, char **argv)
 {
-    size_t pathlen, sufflen, i;
+    size_t sufflen, len;
     char *basename_start;
-    if (argc < 2) { write(1, ".\n", 2); return 0; }
-    pathlen = strlen(argv[1]);
-    if(!pathlen) { write(1, ".\n", 2); return 0; }
-    for (i = 1; i < pathlen; i++)
-        if (argv[1][pathlen - i] != '/') break;
-    if (i == pathlen) {
-        write(1, "/\n", 2);
+    if (argc < 2) {
+        allwrite(1, ".\n", 2);
         return 0;
     }
-    i--;
-    argv[1][pathlen - i] = '\0';
-    pathlen = pathlen - i;
-    for(i = 1; i < pathlen; i++)
-        if (argv[1][pathlen - i] == '/') break;
-    if (i == pathlen)
-        basename_start = argv[1];
-    else {
-        basename_start = argv[1] + pathlen - i + 1;
-        pathlen = i - 1;
+    len = strlen(argv[1]);
+    if (!len) {
+        allwrite(1, ".\n", 2);
+        return 0;
     }
+    len--;
+    while (len && argv[1][len] == '/')
+        len--;
+    if (len == 0) {
+        allwrite(1, "/\n", 2);
+        return 0;
+    }
+    len++;
+    argv[1][len] = '\0';
+    basename_start = strrchr(argv[1], '/');
+    if (!basename_start)
+        basename_start = argv[1];
+    else
+        basename_start++;
+    len -= basename_start - argv[1];
+    
     if (argc > 2) {
         sufflen = strlen(argv[2]);
-        if (!strcmp(basename_start + pathlen - sufflen, argv[2]))
-            pathlen -= sufflen;
+        if (sufflen <= len && !strcmp(basename_start + len - sufflen, argv[2]))
+            len -= sufflen;
     }
-    write(1, basename_start, pathlen);
-    write(1, "\n", 1);
+    allwrite(1, basename_start, len);
+    fd_write(1, "\n", 1);
     return 0;
 }
