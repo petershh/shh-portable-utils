@@ -19,6 +19,8 @@ char *prepare_string(stralloc const *sa, int fields, int chars);
 
 size_t byte_notin(char const *s, size_t n, char const *sep, size_t len);
 
+int shhgetln(buffer *b, stralloc *sa, char sep);
+
 char *prepare_string(stralloc const *sa, int fields, int chars)
 {
     size_t pos = 0;
@@ -114,42 +116,35 @@ int main(int argc, char const *const *argv)
     } else
         buffer_in = buffer_0;
 
-    result = skagetln(buffer_in, &prev_line, '\n');
-    if (result < 0) {
-        if (errno != EPIPE)
-            strerr_diefu1sys(111, "read line");
-        else {
-            if (!pr_unique)
-                if (do_count)
-                    buffer_puts(buffer_out, "1 ");
-            buffer_putflush(buffer_out, prev_line.s, prev_line.len);
-            return 0;
-        }
+    result = shhgetln(buffer_in, &prev_line, '\n');
+    if (result < 0)
+        strerr_diefu1sys(111, "read line");
+
+    if (!result) {
+        if (!pr_unique)
+            if (do_count)
+                buffer_puts(buffer_out, "1 ");
+        buffer_putflush(buffer_out, prev_line.s, prev_line.len);
+        return 0;
     }
 
     prev_line.s[prev_line.len - 1] = '\0';
     prev_line.len--;
     counter = 1;
     prev_line_start = prepare_string(&prev_line, fields, chars);
-    
 
     for (;;) {
         curr_line.len = 0;
-        result = skagetln(buffer_in, &curr_line, '\n');
-        if (result > 0) {
-            curr_line.s[curr_line.len - 1] = '\0';
-            curr_line.len--;
-        }
+        result = shhgetln(buffer_in, &curr_line, '\n');
+
+        if (result < 0)
+            strerr_diefu1sys(111, "read line");
         if (!result)
             break;
-        if (result < 0) {
-            if (errno != EPIPE)
-                strerr_diefu1sys(111, "read line");
-            else {
-                stralloc_0(&curr_line);
-                curr_line.len--;
-            }
-        }
+
+        curr_line.s[curr_line.len - 1] = '\0';
+        curr_line.len--;
+
         curr_line_start = prepare_string(&curr_line, fields, chars);
         if (!strcmp(prev_line_start, curr_line_start))
             counter++;
@@ -169,8 +164,6 @@ int main(int argc, char const *const *argv)
             prev_line.len--;
             counter = 1;
         }
-        if (result < 0) // errno was EPIPE, we got EOF in the middle of a line
-            break;
     }
     if ((counter > 1 && pr_repeated) || (counter == 1 && pr_unique)) {
         if (do_count) {
@@ -182,4 +175,25 @@ int main(int argc, char const *const *argv)
         buffer_putsflush(buffer_out, "\n");
     }
     return 0;
+}
+
+int shhgetln(buffer *b, stralloc *sa, char sep)
+{
+    size_t start = sa->len;
+    for (;;) {
+        ssize_t r = skagetln_nofill(b, sa, sep);
+        if (r)
+            return r;
+        r = buffer_fill(b);
+        if (r < 0)
+            return r;
+        if (!r) {
+            if (sa->s && (sa->len > start)) {
+                if (!stralloc_append(sa, sep))
+                    return -1;
+                return 1;
+            } else
+                return 0;
+        }
+    }
 }
