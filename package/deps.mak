@@ -15,6 +15,8 @@ basename: EXTRA_LIBS := -lskarnet
 basename: src/shh-portable-utils/basename.o
 cat: EXTRA_LIBS := -lskarnet
 cat: src/shh-portable-utils/cat.o
+cut: EXTRA_LIBS := -lskarnet
+cut: src/shh-portable-utils/cut.o
 false: EXTRA_LIBS :=
 false: src/shh-portable-utils/false.o
 true: EXTRA_LIBS :=

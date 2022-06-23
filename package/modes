@@ -1,5 +1,6 @@
 basename		0755
 cat			0755
+cut			0755
 false		0755
 true		0755
 uniq		0755
