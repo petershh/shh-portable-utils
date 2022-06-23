@@ -21,32 +21,6 @@ size_t byte_notin(char const *s, size_t n, char const *sep, size_t len);
 
 int shhgetln(buffer *b, stralloc *sa, char sep);
 
-char *prepare_string(stralloc const *sa, int fields, int chars)
-{
-    size_t pos = 0;
-    for (int j = 0; j < fields; j++) {
-        pos += byte_notin(sa->s + pos, sa->len - pos, " \t", 2);
-        if (pos >= sa->len)
-            return sa->s + sa->len;
-        pos += byte_in(sa->s + pos, sa->len - pos, " \t", 2);
-        if (pos >= sa->len)
-            return sa->s + sa->len;
-    }
-    return sa->s + (pos + chars > sa->len ? sa->len : pos + chars);
-}
-
-size_t byte_notin(char const *s, size_t n, char const *sep, size_t len)
-{
-    char const *t = s;
-    while (n) {
-        n--;
-        if (!memchr(sep, *t, len))
-            break;
-        t++;
-    }
-    return t - s;
-}
-
 int main(int argc, char const *const *argv)
 {
     char *prev_line_start, *curr_line_start;
@@ -196,4 +170,30 @@ int shhgetln(buffer *b, stralloc *sa, char sep)
                 return 0;
         }
     }
+}
+
+char *prepare_string(stralloc const *sa, int fields, int chars)
+{
+    size_t pos = 0;
+    for (int j = 0; j < fields; j++) {
+        pos += byte_notin(sa->s + pos, sa->len - pos, " \t", 2);
+        if (pos >= sa->len)
+            return sa->s + sa->len;
+        pos += byte_in(sa->s + pos, sa->len - pos, " \t", 2);
+        if (pos >= sa->len)
+            return sa->s + sa->len;
+    }
+    return sa->s + (pos + chars > sa->len ? sa->len : pos + chars);
+}
+
+size_t byte_notin(char const *s, size_t n, char const *sep, size_t len)
+{
+    char const *t = s;
+    while (n) {
+        n--;
+        if (!memchr(sep, *t, len))
+            break;
+        t++;
+    }
+    return t - s;
 }
