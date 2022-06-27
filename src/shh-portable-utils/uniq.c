@@ -11,15 +11,11 @@
 #include <skalibs/strerr2.h>
 #include <skalibs/uint32.h>
 
+#include "shhfuncs.h"
+
 #define USAGE "uniq [-c|-d|-u] [-f fields] [-s char] [input_file [output_file]]"
 
-#define byte_cmp(s1, l1, s2, l2) memcmp((s1), (s2), (l1) < (l2) ? (l1) : (l2))
-
 char *prepare_string(stralloc const *sa, int fields, int chars);
-
-size_t byte_notin(char const *s, size_t n, char const *sep, size_t len);
-
-int shhgetln(buffer *b, stralloc *sa, char sep);
 
 int main(int argc, char const *const *argv)
 {
@@ -151,27 +147,6 @@ int main(int argc, char const *const *argv)
     return 0;
 }
 
-int shhgetln(buffer *b, stralloc *sa, char sep)
-{
-    size_t start = sa->len;
-    for (;;) {
-        ssize_t r = skagetln_nofill(b, sa, sep);
-        if (r)
-            return r;
-        r = buffer_fill(b);
-        if (r < 0)
-            return r;
-        if (!r) {
-            if (sa->s && (sa->len > start)) {
-                if (!stralloc_append(sa, sep))
-                    return -1;
-                return 1;
-            } else
-                return 0;
-        }
-    }
-}
-
 char *prepare_string(stralloc const *sa, int fields, int chars)
 {
     size_t pos = 0;
@@ -186,14 +161,3 @@ char *prepare_string(stralloc const *sa, int fields, int chars)
     return sa->s + (pos + chars > sa->len ? sa->len : pos + chars);
 }
 
-size_t byte_notin(char const *s, size_t n, char const *sep, size_t len)
-{
-    char const *t = s;
-    while (n) {
-        n--;
-        if (!memchr(sep, *t, len))
-            break;
-        t++;
-    }
-    return t - s;
-}
