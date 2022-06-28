@@ -9,6 +9,8 @@
 #include <skalibs/djbunix.h>
 #include <skalibs/strerr2.h>
 
+#include "shhfuncs.h"
+
 #define USAGE "cut -b list [-n] [file...] | -c list [file...] | -f list [-d delim] [-s] [file..]"
 
 typedef void (*cut_func_t)(buffer*, genalloc*, char, int);
@@ -18,6 +20,8 @@ void byte_cut(buffer*, genalloc*, char, int);
 void field_cut(buffer*, genalloc*, char, int);
 
 void parse(genalloc*, char*);
+
+void sort_range(genalloc*);
 
 int main (int argc, char const *const *argv)
 {
@@ -75,5 +79,24 @@ int main (int argc, char const *const *argv)
 
     if (!genalloc_len(disize, &what))
         strerr_dieusage(100, USAGE);
+    sort_range(&what);
+
+    if (!argc) {
+        cut(buffer_0, &what, delim, supress_nodelim);
+        return 0;
+    }
+
+    for (char const *const *filename = argv; *filename; filename++) {
+        if (strcmp(*filename, "-"))
+            buffer_in = buffer_0;
+        else {
+            int fd = openb_read(*filename);
+            if (fd < 0)
+                strerr_diefu3sys(111, "Open file ", filename, " for reading");
+            buffer_init(&buffer_in_, buffer_read, fd, buf, BUFFER_INSIZE);
+            buffer_in = &buffer_in_;
+        }
+        cut(buffer_in, &what, delim, supress_nodelim);
+    }
     return 0;
 }
