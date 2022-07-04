@@ -5,6 +5,7 @@
 src/shh-portable-utils/basename.o src/shh-portable-utils/basename.lo: src/shh-portable-utils/basename.c
 src/shh-portable-utils/byte_notin.o src/shh-portable-utils/byte_notin.lo: src/shh-portable-utils/byte_notin.c src/shh-portable-utils/shhfuncs.h
 src/shh-portable-utils/cat.o src/shh-portable-utils/cat.lo: src/shh-portable-utils/cat.c
+src/shh-portable-utils/chmod.o src/shh-portable-utils/chmod.lo: src/shh-portable-utils/chmod.c
 src/shh-portable-utils/cut.o src/shh-portable-utils/cut.lo: src/shh-portable-utils/cut.c src/shh-portable-utils/shhfuncs.h
 src/shh-portable-utils/false.o src/shh-portable-utils/false.lo: src/shh-portable-utils/false.c
 src/shh-portable-utils/shhgetln.o src/shh-portable-utils/shhgetln.lo: src/shh-portable-utils/shhgetln.c src/shh-portable-utils/shhfuncs.h
@@ -15,6 +16,8 @@ basename: EXTRA_LIBS := -lskarnet
 basename: src/shh-portable-utils/basename.o
 cat: EXTRA_LIBS := -lskarnet
 cat: src/shh-portable-utils/cat.o
+chmod: EXTRA_LIBS := -lskarnet
+chmod: src/shh-portable-utils/chmod.o
 cut: EXTRA_LIBS := -lskarnet
 cut: src/shh-portable-utils/cut.o src/shh-portable-utils/shhgetln.o
 false: EXTRA_LIBS :=
