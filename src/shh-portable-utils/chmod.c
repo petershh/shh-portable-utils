@@ -11,15 +11,19 @@
 
 #define USAGE "chmod [-R] mode file..."
 
+#define S_ISALL (S_IRWXU | S_IRWXG | S_IRWXO | S_ISUID | S_ISGID | S_ISVTX)
+
 struct chmod_directive_s {
-    int who;
+    mode_t who;
     int action;
-    int perm;
+    mode_t perm;
+    int permcopy;
+    int dir_x;
 };
 
 typedef struct chmod_directive_s chmod_directive;
 
-#define CHMOD_DIRECTIVE_ZERO { 0, 0, 0 }
+#define CHMOD_DIRECTIVE_ZERO { 0, 0, 0, 0, 0 }
 
 mode_t parse_octal(char const*);
 
@@ -75,9 +79,11 @@ int main(int argc, char const *const *argv)
             continue;
         }
         if (S_ISDIR(st.st_mode) && recurse)
-            failure ||= traverse_dir(*filename, mode, &directives, mask);
+            failure = failure || traverse_dir(*filename, mode, &directives,
+                                              mask);
         else
-            failure ||= change_mode(filename, mode, &directives, mask);
+            failure = failure || change_mode(*filename, mode, &directives,
+                                             mask);
     }
     return failure ? 111 : 0;
 }
@@ -88,7 +94,7 @@ mode_t parse_octal(char const *raw_mode)
     mode_t mode = 0;
     unsigned int m;
     if (!uint0_oscan(raw_mode, &m))
-        strerr_dief2x("invalid mode: ", raw_mode);
+        strerr_dief2x(100, "invalid mode: ", raw_mode);
 
     if (m & 0001)
         mode |= S_IXOTH;
@@ -126,13 +132,13 @@ void parse_symbolic(char const *raw, genalloc *directives)
         /* stage 1: parse 'who' list */
         for (;;) {
             if (*p == 'u')
-                d.who |= 1;
+                d.who |= S_IRWXU | S_ISUID;
             else if (*p == 'g')
-                d.who |= 2;
+                d.who |= S_IRWXG | S_ISGID;
             else if (*p == 'o')
-                d.who |= 4;
+                d.who |= S_IRWXO;
             else if (*p == 'a')
-                d.who |= 7;
+                d.who |= S_IRWXU | S_IRWXG | S_IRWXO | S_ISUID | S_ISGID;
             else
                 break;
             p++;
@@ -150,28 +156,30 @@ void parse_symbolic(char const *raw, genalloc *directives)
         p++;
         for (;;) {
             if (*p == 'u')
-                d.perm |= 1;
+                d.permcopy |= 1;
             else if (*p == 'g')
-                d.perm |= 2;
+                d.permcopy |= 2;
             else if (*p == 'o')
-                d.perm |= 4;
+                d.permcopy |= 4;
             else if (*p == 'r')
-                d.perm |= 8;
+                d.perm |= S_IRUSR | S_IRGRP | S_IROTH;
             else if (*p == 'w')
-                d.perm |= 16;
+                d.perm |= S_IWUSR | S_IWGRP | S_IWOTH;
             else if (*p == 'x')
-                d.perm |= 32;
+                d.perm |= S_IXUSR | S_IXGRP | S_IXOTH;
             else if (*p == 'X')
-                d.perm |= 64;
+                d.dir_x = 1;
             else if (*p == 's')
-                d.perm |= 128;
+                d.perm |= S_ISUID | S_ISGID;
             else if (*p == 't')
-                d.perm |= 256;
+                d.perm |= S_ISVTX;
             else if (*p == ',') {
                 p++;
                 break;
             }
             else if (*p == '\0') {
+                if (d.perm && d.permcopy)
+                    strerr_dief2x(100, "invalid mode: ", raw);
                 if (!genalloc_append(chmod_directive, directives, &d))
                     strerr_diefu1sys(111, "parse mode");
                 return;
@@ -179,11 +187,13 @@ void parse_symbolic(char const *raw, genalloc *directives)
             p++;
         }
 
+        if (d.perm && d.permcopy)
+            strerr_dief2x(100, "invalid mode: ", raw);
         if (!genalloc_append(chmod_directive, directives, &d))
             strerr_diefu1sys(111, "parse mode");
 
         for (;;) {
-            d.action = d.perm = 0;
+            d.action = d.perm = d.permcopy = d.dir_x = 0;
             if (*p == '+' || *p == '-' || *p == '=')
                 d.action = *p;
             else if (*p == ',')
@@ -197,32 +207,39 @@ void parse_symbolic(char const *raw, genalloc *directives)
 
             for (;;) {
                 if (*p == 'u')
-                    d.perm |= 1;
+                    d.permcopy |= 1;
                 else if (*p == 'g')
-                    d.perm |= 2;
+                    d.permcopy |= 2;
                 else if (*p == 'o')
-                    d.perm |= 4;
+                    d.permcopy |= 4;
                 else if (*p == 'r')
-                    d.perm |= 8;
+                    d.perm |= S_IRUSR | S_IRGRP | S_IROTH;
                 else if (*p == 'w')
-                    d.perm |= 16;
+                    d.perm |= S_IWUSR | S_IWGRP | S_IWOTH;
                 else if (*p == 'x')
-                    d.perm |= 32;
+                    d.perm |= S_IXUSR | S_IXGRP | S_IXOTH;
                 else if (*p == 'X')
-                    d.perm |= 64;
+                    d.dir_x = 1;
                 else if (*p == 's')
-                    d.perm |= 128;
+                    d.perm |= S_ISUID | S_ISGID;
                 else if (*p == 't')
-                    d.perm |= 256;
-                else if (*p == ',')
+                    d.perm |= S_ISVTX;
+                else if (*p == ',') {
+                    p++;
                     break;
+                }
                 else if (*p == '\0') {
+                    if (d.perm && d.permcopy)
+                        strerr_dief2x(100, "invalid mode: ", raw);
                     if (!genalloc_append(chmod_directive, directives, &d))
                         strerr_diefu1sys(111, "parse mode");
                     return;
                 }
                 p++;
             }
+
+            if (d.perm && d.permcopy)
+                strerr_dief2x(100, "invalid mode: ", raw);
             if (!genalloc_append(chmod_directive, directives, &d))
                 strerr_diefu1sys(111, "parse mode");
         }
@@ -232,41 +249,80 @@ void parse_symbolic(char const *raw, genalloc *directives)
 int change_mode(char const *file, mode_t mode, genalloc *directives,
                 mode_t mask)
 {
-    if (!genalloc_len(chmod_directive, directives)) {
-        if (chown(file, mode) == -1) {
-            strerr_warnwu2sys("change mode of ", file);
-            return 1;
-        }
-    } else {
+    mode_t cur_mode;
+    if (!genalloc_len(chmod_directive, directives))
+        cur_mode = mode;
+    else {
         struct stat st;
-        mode_t target_mode;
+        mode_t who, perm, clear;
         chmod_directive const *s = genalloc_s(chmod_directive, directives);
         size_t len = genalloc_len(chmod_directive, directives);
+
         if (stat(file, &st) == -1) {
             strerr_warnwu2sys("stat ", file);
             return 1;
         }
-        target_mode = st.st_mode;
+        cur_mode = st.st_mode;
+
         for (size_t i = 0; i < len; i++) {
+            if (s[i].who) {
+                who = s[i].who;
+                clear = s[i].who;
+            }
+            else {
+                who = ~mask;
+                clear = S_ISALL;
+            }
+            perm = s[i].perm;
+
+            if (s[i].permcopy & 1) {
+                if (cur_mode & S_IRUSR)
+                    perm |= S_IRUSR | S_IRGRP | S_IROTH;
+                if (cur_mode & S_IWUSR)
+                    perm |= S_IWUSR | S_IWGRP | S_IWOTH;
+                if (cur_mode & S_IXUSR)
+                    perm |= S_IXUSR | S_IXGRP | S_IXOTH;
+            }
+            if (s[i].permcopy & 2) {
+                if (cur_mode & S_IRGRP)
+                    perm |= S_IRUSR | S_IRGRP | S_IROTH;
+                if (cur_mode & S_IWGRP)
+                    perm |= S_IWUSR | S_IWGRP | S_IWOTH;
+                if (cur_mode & S_IXGRP)
+                    perm |= S_IXUSR | S_IXGRP | S_IXOTH;
+            }
+            if (s[i].permcopy & 4) {
+                if (cur_mode & S_IROTH)
+                    perm |= S_IRUSR | S_IRGRP | S_IROTH;
+                if (cur_mode & S_IWOTH)
+                    perm |= S_IWUSR | S_IWGRP | S_IWOTH;
+                if (cur_mode & S_IXOTH)
+                    perm |= S_IXUSR | S_IXGRP | S_IXOTH;
+            }
+
+            if (s[i].dir_x && (S_ISDIR(cur_mode)
+                                || (cur_mode & (S_IXUSR | S_IXGRP | S_IXOTH))))
+                perm |= S_IXUSR | S_IXGRP | S_IXOTH;
+
             switch (s[i].action) {
-                case '+':
-                    if (!s[i].perm)
-                        break;
-                    if (!s[i].who) {
-                        if (s[i].perm & 1)
-                            // TODO
-                    }
-                case '-':
-                    if (!s[i].perm)
-                        break;
                 case '=':
+                    cur_mode &= ~clear;
+                case '+':
+                    cur_mode |= (who & perm);
+                    break;
+                case '-':
+                    cur_mode &= ~(who & perm);
             }
         }
+    }
+    if (chmod(file, cur_mode) == -1) {
+        strerr_warnwu2sys("change mode of ", file);
+        return 1;
     }
     return 0;
 }
 
-int traverse_dir(char const *file, mode_t mode, genalloc *directives
+int traverse_dir(char const *file, mode_t mode, genalloc *directives,
                  mode_t mask)
 {
     strerr_dief1x(128, "not implemented yet");
