@@ -1,3 +1,5 @@
+#include <string.h>
+
 #include <sys/types.h>
 #include <sys/stat.h>
 #include <dirent.h>
@@ -29,9 +31,14 @@ mode_t parse_octal(char const*);
 
 void parse_symbolic(char const*, genalloc*);
 
+/*
+ * Algorithm for chmod mode parsing was inspired by sbase's chmod
+ * implementation (https://core.suckless.org/sbase), so let's credit them here.
+ */
+
 int change_mode(char const*, mode_t, genalloc*, mode_t);
 
-int traverse_dir(char const*, mode_t, genalloc*, mode_t);
+int traverse_dir(stralloc*, mode_t, genalloc*, mode_t);
 
 int main(int argc, char const *const *argv)
 {
@@ -78,9 +85,12 @@ int main(int argc, char const *const *argv)
             failure = 1;
             continue;
         }
-        if (S_ISDIR(st.st_mode) && recurse)
-            failure = failure || traverse_dir(*filename, mode, &directives,
+        if (S_ISDIR(st.st_mode) && recurse) {
+            satmp.len = 0;
+            stralloc_catb(&satmp, *filename, strlen(*filename) + 1);
+            failure = failure || traverse_dir(&satmp, mode, &directives,
                                               mask);
+        }
         else
             failure = failure || change_mode(*filename, mode, &directives,
                                              mask);
@@ -322,8 +332,42 @@ int change_mode(char const *file, mode_t mode, genalloc *directives,
     return 0;
 }
 
-int traverse_dir(char const *file, mode_t mode, genalloc *directives,
+int traverse_dir(stralloc *dirname, mode_t mode, genalloc *directives,
                  mode_t mask)
 {
-    strerr_dief1x(128, "not implemented yet");
+    int failure = 0;
+    size_t filename_len;
+    struct dirent *entry;
+    struct stat st;
+    DIR *dir = opendir(dirname->s);
+    if (!dir) {
+        strerr_warnwu2sys("open dir: ", dirname->s);
+        return 1;
+    }
+    while ((entry = readdir(dir))) {
+        if (!strcmp(entry->d_name, ".") || !strcmp(entry->d_name, ".."))
+            continue;
+        dirname->s[dirname->len - 1] = '/';
+        filename_len = strlen(entry->d_name);
+        if (!stralloc_catb(dirname, entry->d_name, filename_len + 1)) {
+            strerr_warnwu4sys("build file name: ", dirname->s, "/",
+                              entry->d_name);
+            failure = 1;
+            continue;
+        }
+        if (stat(dirname->s, &st) == -1) {
+            strerr_warnwu2sys("stat ", dirname->s);
+            failure = 1;
+        }
+        if (S_ISDIR(st.st_mode))
+            failure = failure || traverse_dir(dirname, mode, directives, mask);
+        else
+            failure = failure || change_mode(dirname->s, mode, directives,
+                                             mask);
+        dirname->len -= filename_len + 1;
+        dirname->s[dirname->len - 1] = '\0';
+    }
+    failure = failure || change_mode(dirname->s, mode, directives, mask);
+    closedir(dir);
+    return failure;
 }
