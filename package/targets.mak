@@ -1,6 +1,7 @@
 BIN_TARGETS := \
 basename \
 cat \
+chmod \
 cut \
 false \
 true \
