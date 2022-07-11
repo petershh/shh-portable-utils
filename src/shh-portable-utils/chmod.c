@@ -87,7 +87,11 @@ int main(int argc, char const *const *argv)
         }
         if (S_ISDIR(st.st_mode) && recurse) {
             satmp.len = 0;
-            stralloc_catb(&satmp, *filename, strlen(*filename) + 1);
+            if (!stralloc_catb(&satmp, *filename, strlen(*filename) + 1)) {
+                strerr_warnwu2sys("build file name ", *filename);
+                failure = 1;
+                continue;
+            }
             failure = failure || traverse_dir(&satmp, mode, &directives,
                                               mask);
         }
@@ -354,12 +358,10 @@ int traverse_dir(stralloc *dirname, mode_t mode, genalloc *directives,
                               entry->d_name);
             failure = 1;
             continue;
-        }
-        if (stat(dirname->s, &st) == -1) {
+        } else if (stat(dirname->s, &st) == -1) {
             strerr_warnwu2sys("stat ", dirname->s);
             failure = 1;
-        }
-        if (S_ISDIR(st.st_mode))
+        } else if (S_ISDIR(st.st_mode))
             failure = failure || traverse_dir(dirname, mode, directives, mask);
         else
             failure = failure || change_mode(dirname->s, mode, directives,
