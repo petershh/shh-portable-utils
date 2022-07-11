@@ -1,5 +1,6 @@
 basename		0755
 cat			0755
+chgrp       0755
 chmod       0755
 cut			0755
 false		0755
