@@ -5,10 +5,10 @@
 *.so.*
 config.mak
 src/include/shh-portable-utils/config.h
-basename
-cat
-chmod
-cut
-false
-true
-uniq
+/basename
+/cat
+/chmod
+/cut
+/false
+/true
+/uniq
