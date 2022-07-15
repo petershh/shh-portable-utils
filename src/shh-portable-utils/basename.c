@@ -18,14 +18,14 @@ int main(int argc, char **argv)
         allwrite(1, ".\n", 2);
         return 0;
     }
-    len--;
-    while (len && argv[1][len] == '/')
+
+    while (len && argv[1][len - 1] == '/')
         len--;
     if (len == 0) {
         allwrite(1, "/\n", 2);
         return 0;
     }
-    len++;
+
     argv[1][len] = '\0';
     basename_start = strrchr(argv[1], '/');
     if (!basename_start)
