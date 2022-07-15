@@ -11,6 +11,7 @@ src/include/shh-portable-utils/config.h
 /chmod
 /chown
 /cut
+/dirname
 /false
 /true
 /uniq

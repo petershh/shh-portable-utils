@@ -1,9 +1,10 @@
-basename		0755
+basename    0755
 cat			0755
 chgrp       0755
 chmod       0755
 chown       0755
 cut			0755
+dirname     0755
 false		0755
 true		0755
 uniq		0755

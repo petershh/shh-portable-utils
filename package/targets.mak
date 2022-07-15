@@ -5,6 +5,7 @@ chgrp \
 chmod \
 chown \
 cut \
+dirname \
 false \
 true \
 uniq
