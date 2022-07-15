@@ -17,8 +17,8 @@ basename: EXTRA_LIBS := -lskarnet
 basename: src/shh-portable-utils/basename.o
 cat: EXTRA_LIBS := -lskarnet
 cat: src/shh-portable-utils/cat.o
-chgrp: EXTRA_LIBS := -lskarnet
-chgrp: src/shh-portable-utils/chgrp.o
+chgrp: EXTRA_LIBS := ${SOCKET_LIB} -lskarnet
+chgrp: src/shh-portable-utils/chgrp.o ${LIBNSSS}
 chmod: EXTRA_LIBS := -lskarnet
 chmod: src/shh-portable-utils/chmod.o
 cut: EXTRA_LIBS := -lskarnet
