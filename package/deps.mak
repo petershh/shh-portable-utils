@@ -7,6 +7,7 @@ src/shh-portable-utils/byte_notin.o src/shh-portable-utils/byte_notin.lo: src/sh
 src/shh-portable-utils/cat.o src/shh-portable-utils/cat.lo: src/shh-portable-utils/cat.c
 src/shh-portable-utils/chgrp.o src/shh-portable-utils/chgrp.lo: src/shh-portable-utils/chgrp.c
 src/shh-portable-utils/chmod.o src/shh-portable-utils/chmod.lo: src/shh-portable-utils/chmod.c
+src/shh-portable-utils/chown.o src/shh-portable-utils/chown.lo: src/shh-portable-utils/chown.c
 src/shh-portable-utils/cut.o src/shh-portable-utils/cut.lo: src/shh-portable-utils/cut.c src/shh-portable-utils/shhfuncs.h
 src/shh-portable-utils/false.o src/shh-portable-utils/false.lo: src/shh-portable-utils/false.c
 src/shh-portable-utils/shhgetln.o src/shh-portable-utils/shhgetln.lo: src/shh-portable-utils/shhgetln.c src/shh-portable-utils/shhfuncs.h
@@ -21,6 +22,8 @@ chgrp: EXTRA_LIBS := ${SOCKET_LIB} -lskarnet
 chgrp: src/shh-portable-utils/chgrp.o ${LIBNSSS}
 chmod: EXTRA_LIBS := -lskarnet
 chmod: src/shh-portable-utils/chmod.o
+chown: EXTRA_LIBS := ${SOCKET_LIB} -lskarnet
+chown: src/shh-portable-utils/chown.o ${LIBNSSS}
 cut: EXTRA_LIBS := -lskarnet
 cut: src/shh-portable-utils/cut.o src/shh-portable-utils/shhgetln.o
 false: EXTRA_LIBS :=

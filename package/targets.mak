@@ -3,6 +3,7 @@ basename \
 cat \
 chgrp \
 chmod \
+chown \
 cut \
 false \
 true \
