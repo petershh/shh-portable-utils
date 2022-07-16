@@ -13,6 +13,9 @@ Works best with musl libc.
 - GNU Make, version 3.81 or later;
 - [skalibs](https://skarnet.org/software/skalibs). This is a build-time
   dependency and a run-time dependency if you do not link binaries statically.
+- (***Optional***) [nsss](https://skarnet.org/software/nsss) if you have musl
+  and want nsswitch-like functionality, or if you just want sane nsswitch on
+  your system. This is build-time and run-time dependency.
 
 ## Compilation and installation
 ```
