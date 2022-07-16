@@ -1,0 +1,3 @@
+${SOCKET_LIB}
+${LIBNSSS}
+-lskarnet

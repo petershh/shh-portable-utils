@@ -9,6 +9,7 @@ src/include/shh-portable-utils/config.h
 /cat
 /chgrp
 /chmod
+/chown
 /cut
 /false
 /true
