@@ -15,4 +15,5 @@ src/include/shh-portable-utils/config.h
 /false
 /tee
 /true
+/uname
 /uniq
