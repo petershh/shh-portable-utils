@@ -13,5 +13,6 @@ src/include/shh-portable-utils/config.h
 /cut
 /dirname
 /false
+/tee
 /true
 /uniq

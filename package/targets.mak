@@ -7,6 +7,7 @@ chown \
 cut \
 dirname \
 false \
+tee \
 true \
 uniq
 
