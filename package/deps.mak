@@ -11,6 +11,7 @@ src/shh-portable-utils/chown.o src/shh-portable-utils/chown.lo: src/shh-portable
 src/shh-portable-utils/cut.o src/shh-portable-utils/cut.lo: src/shh-portable-utils/cut.c src/shh-portable-utils/shhfuncs.h
 src/shh-portable-utils/dirname.o src/shh-portable-utils/dirname.lo: src/shh-portable-utils/dirname.c
 src/shh-portable-utils/false.o src/shh-portable-utils/false.lo: src/shh-portable-utils/false.c
+src/shh-portable-utils/link.o src/shh-portable-utils/link.lo: src/shh-portable-utils/link.c
 src/shh-portable-utils/shhgetln.o src/shh-portable-utils/shhgetln.lo: src/shh-portable-utils/shhgetln.c src/shh-portable-utils/shhfuncs.h
 src/shh-portable-utils/tee.o src/shh-portable-utils/tee.lo: src/shh-portable-utils/tee.c
 src/shh-portable-utils/true.o src/shh-portable-utils/true.lo: src/shh-portable-utils/true.c
@@ -33,6 +34,8 @@ dirname: EXTRA_LIBS := -lskarnet
 dirname: src/shh-portable-utils/dirname.o
 false: EXTRA_LIBS :=
 false: src/shh-portable-utils/false.o
+link: EXTRA_LIBS := -lskarnet
+link: src/shh-portable-utils/link.o
 tee: EXTRA_LIBS := -lskarnet
 tee: src/shh-portable-utils/tee.o
 true: EXTRA_LIBS :=
