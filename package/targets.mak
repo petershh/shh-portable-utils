@@ -9,6 +9,7 @@ dirname \
 false \
 tee \
 true \
+uname \
 uniq
 
 LIBEXEC_TARGETS :=

@@ -14,6 +14,7 @@ src/shh-portable-utils/false.o src/shh-portable-utils/false.lo: src/shh-portable
 src/shh-portable-utils/shhgetln.o src/shh-portable-utils/shhgetln.lo: src/shh-portable-utils/shhgetln.c src/shh-portable-utils/shhfuncs.h
 src/shh-portable-utils/tee.o src/shh-portable-utils/tee.lo: src/shh-portable-utils/tee.c
 src/shh-portable-utils/true.o src/shh-portable-utils/true.lo: src/shh-portable-utils/true.c
+src/shh-portable-utils/uname.o src/shh-portable-utils/uname.lo: src/shh-portable-utils/uname.c
 src/shh-portable-utils/uniq.o src/shh-portable-utils/uniq.lo: src/shh-portable-utils/uniq.c src/shh-portable-utils/shhfuncs.h
 
 basename: EXTRA_LIBS := -lskarnet
@@ -36,5 +37,7 @@ tee: EXTRA_LIBS := -lskarnet
 tee: src/shh-portable-utils/tee.o
 true: EXTRA_LIBS :=
 true: src/shh-portable-utils/true.o
+uname: EXTRA_LIBS := -lskarnet
+uname: src/shh-portable-utils/uname.o
 uniq: EXTRA_LIBS := -lskarnet
 uniq: src/shh-portable-utils/uniq.o src/shh-portable-utils/shhgetln.o src/shh-portable-utils/byte_notin.o
