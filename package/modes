@@ -6,5 +6,6 @@ chown       0755
 cut			0755
 dirname     0755
 false		0755
+tee         0755
 true		0755
 uniq		0755
