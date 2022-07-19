@@ -8,6 +8,7 @@ cut \
 dirname \
 false \
 link \
+ln \
 tee \
 true \
 uname \
