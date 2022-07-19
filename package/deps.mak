@@ -18,6 +18,7 @@ src/shh-portable-utils/tee.o src/shh-portable-utils/tee.lo: src/shh-portable-uti
 src/shh-portable-utils/true.o src/shh-portable-utils/true.lo: src/shh-portable-utils/true.c
 src/shh-portable-utils/uname.o src/shh-portable-utils/uname.lo: src/shh-portable-utils/uname.c
 src/shh-portable-utils/uniq.o src/shh-portable-utils/uniq.lo: src/shh-portable-utils/uniq.c src/shh-portable-utils/shhfuncs.h
+src/shh-portable-utils/unlink.o src/shh-portable-utils/unlink.lo: src/shh-portable-utils/unlink.c
 
 basename: EXTRA_LIBS := -lskarnet
 basename: src/shh-portable-utils/basename.o
@@ -47,3 +48,5 @@ uname: EXTRA_LIBS := -lskarnet
 uname: src/shh-portable-utils/uname.o
 uniq: EXTRA_LIBS := -lskarnet
 uniq: src/shh-portable-utils/uniq.o src/shh-portable-utils/shhgetln.o src/shh-portable-utils/byte_notin.o
+unlink: EXTRA_LIBS := -lskarnet
+unlink: src/shh-portable-utils/unlink.o

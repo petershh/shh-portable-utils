@@ -12,6 +12,7 @@ ln \
 tee \
 true \
 uname \
-uniq
+uniq \
+unlink
 
 LIBEXEC_TARGETS :=
