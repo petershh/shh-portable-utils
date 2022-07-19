@@ -14,6 +14,7 @@ src/include/shh-portable-utils/config.h
 /dirname
 /false
 /link
+/ln
 /tee
 /true
 /uname
