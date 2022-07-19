@@ -19,3 +19,4 @@ src/include/shh-portable-utils/config.h
 /true
 /uname
 /uniq
+/unlink
