@@ -15,6 +15,7 @@ src/include/shh-portable-utils/config.h
 /false
 /link
 /ln
+/nice
 /tee
 /true
 /uname

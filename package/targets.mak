@@ -9,6 +9,7 @@ dirname \
 false \
 link \
 ln \
+nice \
 tee \
 true \
 uname \
