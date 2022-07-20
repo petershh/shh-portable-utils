@@ -64,6 +64,9 @@ int main (int argc, char const *const *argv)
 
     gid = parse_group(argv[0]);
 
+    if (gid == -1)
+        strerr_dief3x(100, "group ", argv[0], " was not found");
+
     for (char const *const *filename = argv + 1; *filename; filename++) {
         if (recurse) {
             if (lstat(*filename, &st) == -1) {

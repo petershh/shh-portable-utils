@@ -66,11 +66,17 @@ int main (int argc, char const *const *argv)
     colon = strchr(argv[0], ':');
     if (!colon) {
         uid = parse_user(argv[0]);
+        if (uid == -1)
+            strerr_dief3x(100, "user ", argv[0], " not found");
         gid = -1;
     } else {
         *colon = '\0';
         uid = parse_user(argv[0]);
+        if (uid == -1)
+            strerr_dief3x(100, "user ", argv[0], " not found");
         gid = parse_group(colon + 1);
+        if (gid == -1)
+            strerr_dief3x(100, "group ", colon + 1, " not found");
     }
 
     for (char const *const *filename = argv + 1; *filename; filename++) {

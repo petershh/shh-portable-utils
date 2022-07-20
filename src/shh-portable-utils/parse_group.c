@@ -11,6 +11,6 @@ gid_t parse_group(char const *group)
     if (grp)
         return grp->gr_gid;
     if (!gid_scan(group, &result))
-        strerr_dief3x(100, "group ", group, " was not found");
+        return -1;
     return result;
 }

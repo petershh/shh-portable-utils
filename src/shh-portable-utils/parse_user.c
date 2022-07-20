@@ -13,6 +13,6 @@ uid_t parse_user(char const *user)
     if (pwd)
         return pwd->pw_uid;
     if (!uid_scan(user, &result))
-        strerr_dief3x(100, "user ", user, " was not found");
+        return -1;
     return result;
 }
