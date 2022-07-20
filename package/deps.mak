@@ -14,6 +14,7 @@ src/shh-portable-utils/false.o src/shh-portable-utils/false.lo: src/shh-portable
 src/shh-portable-utils/link.o src/shh-portable-utils/link.lo: src/shh-portable-utils/link.c
 src/shh-portable-utils/ln.o src/shh-portable-utils/ln.lo: src/shh-portable-utils/ln.c
 src/shh-portable-utils/nice.o src/shh-portable-utils/nice.lo: src/shh-portable-utils/nice.c
+src/shh-portable-utils/renice.o src/shh-portable-utils/renice.lo: src/shh-portable-utils/renice.c
 src/shh-portable-utils/shhgetln.o src/shh-portable-utils/shhgetln.lo: src/shh-portable-utils/shhgetln.c src/shh-portable-utils/shhfuncs.h
 src/shh-portable-utils/tee.o src/shh-portable-utils/tee.lo: src/shh-portable-utils/tee.c
 src/shh-portable-utils/true.o src/shh-portable-utils/true.lo: src/shh-portable-utils/true.c
@@ -43,6 +44,8 @@ ln: EXTRA_LIBS := -lskarnet
 ln: src/shh-portable-utils/ln.o
 nice: EXTRA_LIBS := -lskarnet
 nice: src/shh-portable-utils/nice.o
+renice: EXTRA_LIBS := -lskarnet
+renice: src/shh-portable-utils/renice.o
 tee: EXTRA_LIBS := -lskarnet
 tee: src/shh-portable-utils/tee.o
 true: EXTRA_LIBS :=
