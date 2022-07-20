@@ -3,8 +3,6 @@
 
 #include <sys/types.h>
 #include <sys/stat.h>
-#include <pwd.h>
-#include <grp.h>
 #include <unistd.h>
 #include <dirent.h>
 
@@ -12,13 +10,10 @@
 #include <skalibs/sgetopt.h>
 #include <skalibs/skamisc.h>
 #include <skalibs/djbunix.h>
-#include <skalibs/types.h>
+
+#include "shhfuncs.h"
 
 #define USAGE "chown [-h] user[:group] file... | chown -R [-H|-L|-P] user[:group] file..."
-
-uid_t parse_user(char const*);
-
-gid_t parse_group(char const*);
 
 int traverse_dir(stralloc*, uid_t, gid_t, unsigned int);
 
@@ -137,28 +132,6 @@ int main (int argc, char const *const *argv)
         }
     }
     return failure ? 111 : 0;
-}
-
-uid_t parse_user(char const *user)
-{
-    uid_t result;
-    struct passwd *pwd = getpwnam(user);
-    if (pwd)
-        return pwd->pw_uid;
-    if (!uid_scan(user, &result))
-        strerr_dief3x(100, "user ", user, " was not found");
-    return result;
-}
-
-gid_t parse_group(char const *group)
-{
-    gid_t result;
-    struct group *grp = getgrnam(group);
-    if (grp)
-        return grp->gr_gid;
-    if (!gid_scan(group, &result))
-        strerr_dief3x(100, "group ", group, " was not found");
-    return result;
 }
 
 int traverse_dir(stralloc *dirname, uid_t uid, gid_t gid,

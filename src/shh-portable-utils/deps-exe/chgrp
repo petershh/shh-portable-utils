@@ -1,3 +1,4 @@
+parse_group.o
 ${SOCKET_LIB}
 ${LIBNSSS}
 -lskarnet
