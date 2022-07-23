@@ -11,11 +11,10 @@
 #include <skalibs/sgetopt.h>
 #include <skalibs/skamisc.h>
 #include <skalibs/djbunix.h>
-#include <skalibs/types.h>
+
+#include "shhfuncs.h"
 
 #define USAGE "chgrp [-h] group file... | chgrp -R [-H|-L|-P] group file..."
-
-gid_t parse_group(char const*);
 
 int traverse_dir(stralloc*, gid_t, unsigned int);
 
@@ -64,6 +63,9 @@ int main (int argc, char const *const *argv)
         strerr_dieusage(100, USAGE);
 
     gid = parse_group(argv[0]);
+
+    if (gid == -1)
+        strerr_dief3x(100, "group ", argv[0], " was not found");
 
     for (char const *const *filename = argv + 1; *filename; filename++) {
         if (recurse) {
@@ -124,17 +126,6 @@ int main (int argc, char const *const *argv)
         }
     }
     return failure ? 111 : 0;
-}
-
-gid_t parse_group(char const *group)
-{
-    gid_t result;
-    struct group *grp = getgrnam(group);
-    if (grp)
-        return grp->gr_gid;
-    if (!gid_scan(group, &result))
-        strerr_dief3x(100, "group ", group, " was not found");
-    return result;
 }
 
 int traverse_dir(stralloc *dirname, gid_t gid, unsigned int symlink_follow_mode)

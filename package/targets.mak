@@ -10,6 +10,7 @@ false \
 link \
 ln \
 nice \
+renice \
 tee \
 true \
 uname \
