@@ -9,6 +9,7 @@ false		0755
 link        0755
 ln          0755
 nice        0755
+nohup       0755
 renice      0755
 tee         0755
 true		0755
