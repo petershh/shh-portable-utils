@@ -24,6 +24,7 @@ src/shh-portable-utils/true.o src/shh-portable-utils/true.lo: src/shh-portable-u
 src/shh-portable-utils/uname.o src/shh-portable-utils/uname.lo: src/shh-portable-utils/uname.c
 src/shh-portable-utils/uniq.o src/shh-portable-utils/uniq.lo: src/shh-portable-utils/uniq.c src/shh-portable-utils/shhfuncs.h
 src/shh-portable-utils/unlink.o src/shh-portable-utils/unlink.lo: src/shh-portable-utils/unlink.c
+src/shh-portable-utils/wc.o src/shh-portable-utils/wc.lo: src/shh-portable-utils/wc.c src/shh-portable-utils/shhfuncs.h
 
 basename: EXTRA_LIBS := -lskarnet
 basename: src/shh-portable-utils/basename.o
@@ -61,3 +62,5 @@ uniq: EXTRA_LIBS := -lskarnet
 uniq: src/shh-portable-utils/uniq.o src/shh-portable-utils/shhgetln.o src/shh-portable-utils/byte_notin.o
 unlink: EXTRA_LIBS := -lskarnet
 unlink: src/shh-portable-utils/unlink.o
+wc: EXTRA_LIBS := -lskarnet
+wc: src/shh-portable-utils/wc.o src/shh-portable-utils/byte_notin.o
