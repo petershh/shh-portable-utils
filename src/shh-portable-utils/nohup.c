@@ -47,8 +47,8 @@ int main(int argc, char **argv)
     /* stderr */
 
     if (stderr_tty) {
-        if (!stdout_tty && !stdout_closed) {
-            if (dup2(2, 1) == -1)
+        if (!stdout_closed) {
+            if (dup2(1, 2) == -1)
                 strerr_diefu1sys(127, "redirect stderr to stdin");
         } else {
             new_fd = open_nohupout();
