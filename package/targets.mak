@@ -10,6 +10,7 @@ false \
 link \
 ln \
 nice \
+nohup \
 renice \
 tee \
 true \
