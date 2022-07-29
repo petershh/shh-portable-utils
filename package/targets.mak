@@ -16,6 +16,7 @@ tee \
 true \
 uname \
 uniq \
-unlink
+unlink \
+wc
 
 LIBEXEC_TARGETS :=

@@ -16,3 +16,4 @@ true		0755
 uniq		0755
 uname       0755
 unlink      0755
+wc          0755
