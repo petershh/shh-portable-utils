@@ -1,1 +1,4 @@
+parse_octal.o
+parse_symbolic.o
+change_mode.o
 -lskarnet
