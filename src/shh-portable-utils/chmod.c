@@ -49,9 +49,9 @@ int main(int argc, char const *const *argv)
     umask(mask);
 
     if ('0' <= argv[0][0] && argv[0][0] <= '7')
-        mode = parse_octal(argv[0]);
+        mode = parse_mode_octal(argv[0]);
     else {
-        parse_symbolic(argv[0], &directives);
+        parse_mode_symbolic(argv[0], &directives);
         if (!genalloc_len(chmod_directive, &directives))
             strerr_dieusage(100, USAGE);
     }

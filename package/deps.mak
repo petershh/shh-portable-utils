@@ -17,8 +17,8 @@ src/shh-portable-utils/ln.o src/shh-portable-utils/ln.lo: src/shh-portable-utils
 src/shh-portable-utils/nice.o src/shh-portable-utils/nice.lo: src/shh-portable-utils/nice.c
 src/shh-portable-utils/nohup.o src/shh-portable-utils/nohup.lo: src/shh-portable-utils/nohup.c
 src/shh-portable-utils/parse_group.o src/shh-portable-utils/parse_group.lo: src/shh-portable-utils/parse_group.c
-src/shh-portable-utils/parse_octal.o src/shh-portable-utils/parse_octal.lo: src/shh-portable-utils/parse_octal.c src/shh-portable-utils/shhfuncs.h
-src/shh-portable-utils/parse_symbolic.o src/shh-portable-utils/parse_symbolic.lo: src/shh-portable-utils/parse_symbolic.c
+src/shh-portable-utils/parse_mode_octal.o src/shh-portable-utils/parse_mode_octal.lo: src/shh-portable-utils/parse_mode_octal.c src/shh-portable-utils/shhfuncs.h
+src/shh-portable-utils/parse_mode_symbolic.o src/shh-portable-utils/parse_mode_symbolic.lo: src/shh-portable-utils/parse_mode_symbolic.c src/shh-portable-utils/shhfuncs.h
 src/shh-portable-utils/parse_user.o src/shh-portable-utils/parse_user.lo: src/shh-portable-utils/parse_user.c src/shh-portable-utils/shhfuncs.h
 src/shh-portable-utils/renice.o src/shh-portable-utils/renice.lo: src/shh-portable-utils/renice.c src/shh-portable-utils/shhfuncs.h
 src/shh-portable-utils/shhgetln.o src/shh-portable-utils/shhgetln.lo: src/shh-portable-utils/shhgetln.c src/shh-portable-utils/shhfuncs.h
@@ -36,7 +36,7 @@ cat: src/shh-portable-utils/cat.o
 chgrp: EXTRA_LIBS := ${SOCKET_LIB} -lskarnet
 chgrp: src/shh-portable-utils/chgrp.o src/shh-portable-utils/parse_group.o ${LIBNSSS}
 chmod: EXTRA_LIBS := -lskarnet
-chmod: src/shh-portable-utils/chmod.o src/shh-portable-utils/parse_octal.o src/shh-portable-utils/parse_symbolic.o src/shh-portable-utils/change_mode.o
+chmod: src/shh-portable-utils/chmod.o src/shh-portable-utils/parse_mode_octal.o src/shh-portable-utils/parse_mode_symbolic.o src/shh-portable-utils/change_mode.o
 chown: EXTRA_LIBS := ${SOCKET_LIB} -lskarnet
 chown: src/shh-portable-utils/chown.o src/shh-portable-utils/parse_user.o src/shh-portable-utils/parse_group.o ${LIBNSSS}
 cut: EXTRA_LIBS := -lskarnet

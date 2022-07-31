@@ -3,7 +3,7 @@
 
 #include "shhfuncs.h"
 
-void parse_symbolic(char const *raw, genalloc *directives)
+void parse_mode_symbolic(char const *raw, genalloc *directives)
 {
     char const *p = raw;
     for (;;) {
