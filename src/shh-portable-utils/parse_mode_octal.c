@@ -3,7 +3,7 @@
 
 #include "shhfuncs.h"
 
-mode_t parse_octal(char const *raw_mode)
+mode_t parse_mode_octal(char const *raw_mode)
 {
     mode_t mode = 0;
     unsigned int m;
