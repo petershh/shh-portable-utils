@@ -3,37 +3,37 @@
 
 #include "shhfuncs.h"
 
-mode_t parse_mode_octal(char const *raw_mode)
+int parse_mode_octal(char const *raw_mode, mode_t *mode)
 {
-    mode_t mode = 0;
+    *mode = 0;
     unsigned int m;
     if (!uint0_oscan(raw_mode, &m))
-        strerr_dief2x(100, "invalid mode: ", raw_mode);
+        return 1;
 
     if (m & 0001)
-        mode |= S_IXOTH;
+        *mode |= S_IXOTH;
     if (m & 0002)
-        mode |= S_IWOTH;
+        *mode |= S_IWOTH;
     if (m & 0004)
-        mode |= S_IROTH;
+        *mode |= S_IROTH;
     if (m & 0010)
-        mode |= S_IXGRP;
+        *mode |= S_IXGRP;
     if (m & 0020)
-        mode |= S_IWGRP;
+        *mode |= S_IWGRP;
     if (m & 0040)
-        mode |= S_IRGRP;
+        *mode |= S_IRGRP;
     if (m & 0100)
-        mode |= S_IXUSR;
+        *mode |= S_IXUSR;
     if (m & 0200)
-        mode |= S_IWUSR;
+        *mode |= S_IWUSR;
     if (m & 0400)
-        mode |= S_IRUSR;
+        *mode |= S_IRUSR;
     if (m & 01000)
-        mode |= S_ISVTX;
+        *mode |= S_ISVTX;
     if (m & 02000)
-        mode |= S_ISGID;
+        *mode |= S_ISGID;
     if (m & 04000)
-        mode |= S_ISUID;
+        *mode |= S_ISUID;
 
-    return mode;
+    return 0;
 }

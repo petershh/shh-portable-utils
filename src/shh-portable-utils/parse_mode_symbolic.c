@@ -3,7 +3,7 @@
 
 #include "shhfuncs.h"
 
-void parse_mode_symbolic(char const *raw, genalloc *directives)
+int parse_mode_symbolic(char const *raw, genalloc *directives)
 {
     char const *p = raw;
     for (;;) {
@@ -30,7 +30,7 @@ void parse_mode_symbolic(char const *raw, genalloc *directives)
                 d.action = *p;
                 break;
             default:
-                strerr_dief2x(100, "invalid mode: ", raw);
+                return 1;
         }
         p++;
         for (;;) {
@@ -58,18 +58,18 @@ void parse_mode_symbolic(char const *raw, genalloc *directives)
             }
             else if (*p == '\0') {
                 if (d.perm && d.permcopy)
-                    strerr_dief2x(100, "invalid mode: ", raw);
+                    return 1;
                 if (!genalloc_append(chmod_directive, directives, &d))
-                    strerr_diefu1sys(111, "parse mode");
-                return;
+                    return 2;
+                return 0;
             }
             p++;
         }
 
         if (d.perm && d.permcopy)
-            strerr_dief2x(100, "invalid mode: ", raw);
+            return 1;
         if (!genalloc_append(chmod_directive, directives, &d))
-            strerr_diefu1sys(111, "parse mode");
+            return 2;
 
         for (;;) {
             d.action = d.perm = d.permcopy = d.dir_x = 0;
@@ -78,9 +78,9 @@ void parse_mode_symbolic(char const *raw, genalloc *directives)
             else if (*p == ',')
                 break;
             else if (*p == '\0')
-                return;
+                return 0;
             else
-                strerr_dief2x(100, "invalid mode: ", raw);
+                return 1;
 
             p++;
 
@@ -112,16 +112,17 @@ void parse_mode_symbolic(char const *raw, genalloc *directives)
                         strerr_dief2x(100, "invalid mode: ", raw);
                     if (!genalloc_append(chmod_directive, directives, &d))
                         strerr_diefu1sys(111, "parse mode");
-                    return;
+                    return 0;
                 }
                 p++;
             }
 
             if (d.perm && d.permcopy)
-                strerr_dief2x(100, "invalid mode: ", raw);
+                return 1;
             if (!genalloc_append(chmod_directive, directives, &d))
-                strerr_diefu1sys(111, "parse mode");
+                return 2;
         }
     }
+    return 0;
 }
 
