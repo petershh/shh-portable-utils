@@ -53,7 +53,6 @@ int parse_mode_symbolic(char const *raw, genalloc *directives)
             else if (*p == 't')
                 d.perm |= S_ISVTX;
             else if (*p == ',') {
-                p++;
                 break;
             }
             else if (*p == '\0') {
@@ -75,8 +74,10 @@ int parse_mode_symbolic(char const *raw, genalloc *directives)
             d.action = d.perm = d.permcopy = d.dir_x = 0;
             if (*p == '+' || *p == '-' || *p == '=')
                 d.action = *p;
-            else if (*p == ',')
+            else if (*p == ',') {
+                p++;
                 break;
+            }
             else if (*p == '\0')
                 return 0;
             else
@@ -109,9 +110,9 @@ int parse_mode_symbolic(char const *raw, genalloc *directives)
                 }
                 else if (*p == '\0') {
                     if (d.perm && d.permcopy)
-                        strerr_dief2x(100, "invalid mode: ", raw);
+                        return 1;
                     if (!genalloc_append(chmod_directive, directives, &d))
-                        strerr_diefu1sys(111, "parse mode");
+                        return 2;
                     return 0;
                 }
                 p++;

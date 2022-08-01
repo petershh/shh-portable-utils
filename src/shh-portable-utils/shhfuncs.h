@@ -20,13 +20,7 @@ typedef struct chmod_directive_s chmod_directive;
 
 int parse_mode_octal(char const*, mode_t*);
 int parse_mode_symbolic(char const*, genalloc*);
-
-/*
- * Algorithm for chmod mode parsing was inspired by sbase's chmod
- * implementation (https://core.suckless.org/sbase), so let's credit them here.
- */
-
-int change_mode(char const*, mode_t, genalloc*, mode_t);
+mode_t change_mode(mode_t, genalloc*, mode_t);
 
 
 size_t byte_notin(char const *s, size_t n, char const *sep, size_t len);
