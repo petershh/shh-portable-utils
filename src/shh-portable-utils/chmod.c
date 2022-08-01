@@ -1,5 +1,6 @@
 #include <string.h>
 
+#include <fcntl.h>
 #include <sys/types.h>
 #include <sys/stat.h>
 #include <dirent.h>
@@ -17,6 +18,8 @@
 
 int traverse_dir(stralloc*, mode_t, genalloc*, mode_t);
 
+int doit(char const*, mode_t, mode_t, genalloc*, mode_t);
+
 int main(int argc, char const *const *argv)
 {
     struct stat st;
@@ -24,6 +27,7 @@ int main(int argc, char const *const *argv)
     mode_t mode = 0;
     int recurse = 0;
     int failure = 0;
+    stralloc s = STRALLOC_ZERO;
     genalloc directives = GENALLOC_ZERO;
     subgetopt l = SUBGETOPT_ZERO;
     PROG = "chmod";
@@ -69,19 +73,44 @@ int main(int argc, char const *const *argv)
         }
         if (S_ISDIR(st.st_mode) && recurse) {
             satmp.len = 0;
-            if (!stralloc_catb(&satmp, *filename, strlen(*filename) + 1)) {
-                strerr_warnwu2sys("build file name ", *filename);
+            if (!stralloc_catb(&s, *filename, strlen(*filename) + 1)) {
+                strerr_warnwu2sys("copy file name ", *filename);
                 failure = 1;
                 continue;
             }
-            failure = failure || traverse_dir(&satmp, mode, &directives,
+            /* POSIX says that "//" behaviour is implementation-defined,
+             * so remove redundant slash to avoid weird bugs.
+             * indexing operation is safe, since stat would fail
+             * on empty string, so s.len is >= 2 always.
+             */
+            if (s.s[s.len - 2] == '/') {
+                s.s[s.len - 2] = '\0';
+                s.len--;
+            }
+            failure = failure || traverse_dir(&s, mode, &directives,
                                               mask);
         }
-        else
-            failure = failure || change_mode(*filename, mode, &directives,
-                                             mask);
+        else {
+            failure = failure || doit(*filename, st.st_mode, mode, &directives,
+                                      mask);
+        }
     }
     return failure ? 111 : 0;
+}
+
+int doit(char const *file, mode_t st_mode, mode_t mode,
+         genalloc *directives, mode_t mask)
+{
+    mode_t target_mode;
+    if (!genalloc_len(chmod_directive, directives))
+        target_mode = mode;
+    else
+        target_mode = change_mode(st_mode, directives, mask);
+    if (chmod(file, target_mode) == -1) {
+        strerr_warnwu2sys("change mode of ", file);
+        return 1;
+    }
+    return 0;
 }
 
 int traverse_dir(stralloc *dirname, mode_t mode, genalloc *directives,
@@ -111,13 +140,14 @@ int traverse_dir(stralloc *dirname, mode_t mode, genalloc *directives,
             failure = 1;
         } else if (S_ISDIR(st.st_mode))
             failure = failure || traverse_dir(dirname, mode, directives, mask);
-        else
-            failure = failure || change_mode(dirname->s, mode, directives,
-                                             mask);
+        else {
+            failure = failure || doit(dirname->s, st.st_mode, mode, directives,
+                                      mask);
+        }
         dirname->len -= filename_len + 1;
         dirname->s[dirname->len - 1] = '\0';
     }
-    failure = failure || change_mode(dirname->s, mode, directives, mask);
+    failure = failure || doit(dirname->s, st.st_mode, mode, directives, mask);
     closedir(dir);
     return failure;
 }
