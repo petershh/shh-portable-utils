@@ -18,8 +18,8 @@ typedef struct chmod_directive_s chmod_directive;
 
 #define CHMOD_DIRECTIVE_ZERO { 0, 0, 0, 0, 0 }
 
-mode_t parse_mode_octal(char const*);
-void parse_mode_symbolic(char const*, genalloc*);
+int parse_mode_octal(char const*, mode_t*);
+int parse_mode_symbolic(char const*, genalloc*);
 
 /*
  * Algorithm for chmod mode parsing was inspired by sbase's chmod
