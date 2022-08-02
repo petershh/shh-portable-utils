@@ -1,3 +1,5 @@
+#include <errno.h>
+
 #include <skalibs/genalloc.h>
 #include <skalibs/strerr2.h>
 
@@ -30,7 +32,8 @@ int parse_mode_symbolic(char const *raw, genalloc *directives)
                 d.action = *p;
                 break;
             default:
-                return 1;
+                errno = EINVAL;
+                return -1;
         }
         p++;
         for (;;) {
@@ -56,19 +59,26 @@ int parse_mode_symbolic(char const *raw, genalloc *directives)
                 break;
             }
             else if (*p == '\0') {
-                if (d.perm && d.permcopy)
-                    return 1;
+                if (d.perm && d.permcopy) {
+                    errno = EINVAL;
+                    return -1;
+                }
                 if (!genalloc_append(chmod_directive, directives, &d))
-                    return 2;
+                    return -1; /* errno = ENOMEM */
                 return 0;
+            } else {
+                errno = EINVAL;
+                return -1;
             }
             p++;
         }
 
-        if (d.perm && d.permcopy)
-            return 1;
+        if (d.perm && d.permcopy) {
+            errno = EINVAL;
+            return -1;
+        }
         if (!genalloc_append(chmod_directive, directives, &d))
-            return 2;
+            return -1; /* errno = ENOMEM */
 
         for (;;) {
             d.action = d.perm = d.permcopy = d.dir_x = 0;
@@ -80,8 +90,10 @@ int parse_mode_symbolic(char const *raw, genalloc *directives)
             }
             else if (*p == '\0')
                 return 0;
-            else
-                return 1;
+            else {
+                errno = EIVAL;
+                return -1;
+            }
 
             p++;
 
@@ -109,19 +121,26 @@ int parse_mode_symbolic(char const *raw, genalloc *directives)
                     break;
                 }
                 else if (*p == '\0') {
-                    if (d.perm && d.permcopy)
-                        return 1;
+                    if (d.perm && d.permcopy) {
+                        errno = EINVAL;
+                        return -1;
+                    }
                     if (!genalloc_append(chmod_directive, directives, &d))
-                        return 2;
+                        return -1; /* errno = ENOMEM */
                     return 0;
+                } else {
+                    errno = EINVAL;
+                    return -1;
                 }
                 p++;
             }
 
-            if (d.perm && d.permcopy)
-                return 1;
+            if (d.perm && d.permcopy) {
+                errno = EINVAL;
+                return -1;
+            }
             if (!genalloc_append(chmod_directive, directives, &d))
-                return 2;
+                return -1; /* errno = ENOMEM */
         }
     }
     return 0;

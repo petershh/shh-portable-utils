@@ -56,11 +56,12 @@ int main(int argc, char const *const *argv)
         if (parse_mode_octal(argv[0], &mode))
             strerr_dief2sys(100, "invalid mode: ", argv[0]);
     } else {
-        int result = parse_mode_symbolic(argv[0], &directives);
-        if (result == 1)
-            strerr_dief2x(100, "invalid mode: ", argv[0]);
-        else if (result == 2)
-            strerr_diefu1sys(111, "parse mode");
+        if (parse_mode_symbolic(argv[0], &directives) == -1) {
+            if (errno == EINVAL)
+                strerr_diefu2sys(100, "invalid mode: ", argv[0]);
+            else
+                strerr_diefu1sys(111, "parse mode")
+        }
         if (!genalloc_len(chmod_directive, &directives))
             strerr_dieusage(100, USAGE);
     }
