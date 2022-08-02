@@ -91,7 +91,7 @@ int parse_mode_symbolic(char const *raw, genalloc *directives)
             else if (*p == '\0')
                 return 0;
             else {
-                errno = EIVAL;
+                errno = EINVAL;
                 return -1;
             }
 

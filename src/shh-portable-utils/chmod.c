@@ -1,3 +1,4 @@
+#include <errno.h>
 #include <string.h>
 
 #include <fcntl.h>
@@ -16,9 +17,9 @@
 
 #define USAGE "chmod [-R] mode file..."
 
-int traverse_dir(stralloc*, mode_t, genalloc*, mode_t);
+int traverse_dir(stralloc*, mode_t, chmod_directive*, size_t, mode_t);
 
-int doit(char const*, mode_t, mode_t, genalloc*, mode_t);
+int doit(char const*, mode_t, mode_t, chmod_directive*, size_t, mode_t);
 
 int main(int argc, char const *const *argv)
 {
@@ -27,6 +28,8 @@ int main(int argc, char const *const *argv)
     mode_t mode = 0;
     int recurse = 0;
     int failure = 0;
+    chmod_directive *d;
+    size_t len;
     stralloc s = STRALLOC_ZERO;
     genalloc directives = GENALLOC_ZERO;
     subgetopt l = SUBGETOPT_ZERO;
@@ -60,11 +63,14 @@ int main(int argc, char const *const *argv)
             if (errno == EINVAL)
                 strerr_diefu2sys(100, "invalid mode: ", argv[0]);
             else
-                strerr_diefu1sys(111, "parse mode")
+                strerr_diefu1sys(111, "parse mode");
         }
         if (!genalloc_len(chmod_directive, &directives))
             strerr_dieusage(100, USAGE);
     }
+
+    d = genalloc_s(chmod_directive, &directives);
+    len = genalloc_len(chmod_directive, &directives);
 
     for (char const *const *filename = argv + 1; *filename; filename++) {
         if (stat(*filename, &st)) {
@@ -88,11 +94,10 @@ int main(int argc, char const *const *argv)
                 s.s[s.len - 2] = '\0';
                 s.len--;
             }
-            failure = failure || traverse_dir(&s, mode, &directives,
-                                              mask);
+            failure = failure || traverse_dir(&s, mode, d, len, mask);
         }
         else {
-            failure = failure || doit(*filename, st.st_mode, mode, &directives,
+            failure = failure || doit(*filename, st.st_mode, mode, d, len,
                                       mask);
         }
     }
@@ -100,13 +105,13 @@ int main(int argc, char const *const *argv)
 }
 
 int doit(char const *file, mode_t st_mode, mode_t mode,
-         genalloc *directives, mode_t mask)
+         chmod_directive *directives, size_t directives_len, mode_t mask)
 {
     mode_t target_mode;
-    if (!genalloc_len(chmod_directive, directives))
+    if (!directives_len)
         target_mode = mode;
     else
-        target_mode = change_mode(st_mode, directives, mask);
+        target_mode = change_mode(st_mode, directives, directives_len, mask);
     if (chmod(file, target_mode) == -1) {
         strerr_warnwu2sys("change mode of ", file);
         return 1;
@@ -114,8 +119,8 @@ int doit(char const *file, mode_t st_mode, mode_t mode,
     return 0;
 }
 
-int traverse_dir(stralloc *dirname, mode_t mode, genalloc *directives,
-                 mode_t mask)
+int traverse_dir(stralloc *dirname, mode_t mode, chmod_directive *directives,
+                 size_t directives_len, mode_t mask)
 {
     int failure = 0;
     size_t filename_len;
@@ -140,15 +145,17 @@ int traverse_dir(stralloc *dirname, mode_t mode, genalloc *directives,
             strerr_warnwu2sys("stat ", dirname->s);
             failure = 1;
         } else if (S_ISDIR(st.st_mode))
-            failure = failure || traverse_dir(dirname, mode, directives, mask);
+            failure = failure || traverse_dir(dirname, mode, directives,
+                                              directives_len, mask);
         else {
             failure = failure || doit(dirname->s, st.st_mode, mode, directives,
-                                      mask);
+                                      directives_len, mask);
         }
         dirname->len -= filename_len + 1;
         dirname->s[dirname->len - 1] = '\0';
     }
-    failure = failure || doit(dirname->s, st.st_mode, mode, directives, mask);
+    failure = failure || doit(dirname->s, st.st_mode, mode, directives,
+                              directives_len, mask);
     closedir(dir);
     return failure;
 }

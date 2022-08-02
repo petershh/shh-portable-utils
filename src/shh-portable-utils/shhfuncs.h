@@ -20,7 +20,7 @@ typedef struct chmod_directive_s chmod_directive;
 
 int parse_mode_octal(char const*, mode_t*);
 int parse_mode_symbolic(char const*, genalloc*);
-mode_t change_mode(mode_t, genalloc*, mode_t);
+mode_t change_mode(mode_t, chmod_directive*, size_t, mode_t);
 
 
 size_t byte_notin(char const *s, size_t n, char const *sep, size_t len);
