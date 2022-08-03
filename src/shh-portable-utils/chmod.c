@@ -61,7 +61,7 @@ int main(int argc, char const *const *argv)
     } else {
         if (parse_mode_symbolic(argv[0], &directives) == -1) {
             if (errno == EINVAL)
-                strerr_diefu2sys(100, "invalid mode: ", argv[0]);
+                strerr_diefu2x(100, "invalid mode: ", argv[0]);
             else
                 strerr_diefu1sys(111, "parse mode");
         }
