@@ -60,6 +60,7 @@ mode_t change_mode(mode_t initial_mode, chmod_directive *directives,
         switch (directives[i].action) {
             case '=':
                 cur_mode &= ~clear;
+                /* fallthrough */
             case '+':
                 cur_mode |= (who & perm);
                 break;

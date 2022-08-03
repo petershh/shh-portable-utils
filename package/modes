@@ -8,6 +8,7 @@ dirname     0755
 false		0755
 link        0755
 ln          0755
+mkfifo      0755
 nice        0755
 nohup       0755
 renice      0755

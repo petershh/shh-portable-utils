@@ -9,6 +9,7 @@ dirname \
 false \
 link \
 ln \
+mkfifo \
 nice \
 nohup \
 renice \
