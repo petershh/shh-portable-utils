@@ -57,7 +57,7 @@ This is free software licensed under MIT license. See COPYING for details.
            responsibility on their own, and downloading them via de facto
            unmoderated repository opens [giant possibilities for supply chain
            attacks](https://drewdevault.com/2022/05/12/Supply-chain-when-will-we-learn.html).
-           ssh-utils use limited number of dependencies and author reviews
+           ssh-utils uses limited number of dependencies and author reviews
            its code. These dependencies are meant to be supplied by your
            software distribution's package manager. shh-utils author is
            committed to cooperation with distribution maintainers. Dependencies
