@@ -9,6 +9,7 @@ dirname \
 false \
 link \
 ln \
+logname \
 mkdir \
 mkfifo \
 nice \
