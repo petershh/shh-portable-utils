@@ -14,7 +14,8 @@ src/shh-portable-utils/dirname.o src/shh-portable-utils/dirname.lo: src/shh-port
 src/shh-portable-utils/false.o src/shh-portable-utils/false.lo: src/shh-portable-utils/false.c
 src/shh-portable-utils/link.o src/shh-portable-utils/link.lo: src/shh-portable-utils/link.c
 src/shh-portable-utils/ln.o src/shh-portable-utils/ln.lo: src/shh-portable-utils/ln.c
-src/shh-portable-utils/mkdir.o src/shh-portable-utils/mkdir.lo: src/shh-portable-utils/mkdir.c
+src/shh-portable-utils/logname.o src/shh-portable-utils/logname.lo: src/shh-portable-utils/logname.c
+src/shh-portable-utils/mkdir.o src/shh-portable-utils/mkdir.lo: src/shh-portable-utils/mkdir.c src/shh-portable-utils/shhfuncs.h
 src/shh-portable-utils/mkfifo.o src/shh-portable-utils/mkfifo.lo: src/shh-portable-utils/mkfifo.c src/shh-portable-utils/shhfuncs.h
 src/shh-portable-utils/nice.o src/shh-portable-utils/nice.lo: src/shh-portable-utils/nice.c
 src/shh-portable-utils/nohup.o src/shh-portable-utils/nohup.lo: src/shh-portable-utils/nohup.c
@@ -51,6 +52,8 @@ link: EXTRA_LIBS := -lskarnet
 link: src/shh-portable-utils/link.o
 ln: EXTRA_LIBS := -lskarnet
 ln: src/shh-portable-utils/ln.o
+logname: EXTRA_LIBS := -lskarnet
+logname: src/shh-portable-utils/logname.o
 mkdir: EXTRA_LIBS := -lskarnet
 mkdir: src/shh-portable-utils/mkdir.o src/shh-portable-utils/parse_mode_octal.o src/shh-portable-utils/parse_mode_symbolic.o src/shh-portable-utils/change_mode.o
 mkfifo: EXTRA_LIBS := -lskarnet
