@@ -1,3 +1,5 @@
+**This repository has been moved. New location: TBA**
+
 # shh-portable-utils
 
 Shhh!
